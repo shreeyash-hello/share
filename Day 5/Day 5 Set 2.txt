@@ -1,0 +1,80 @@
+1. Create a view Salesman_data which will display all the details of Salesman job. The 
+view should allow the user to insert records of Salesman job only. 
+
+CREATE VIEW Salesman_data AS
+SELECT *
+FROM emp
+WHERE job = 'SALESMAN'
+WITH CHECK OPTION;
+
+
+2. Create a View Emp_Salary_Details  which will display employee’s name, salary,    
+commission, total (which will be salary plus commission), tax as 30% of the total, 
+HRA as 10% of salary, DA as 5% of salary, TA as 7% of salary, PF as 200 and Gross 
+that would be the formula as (Total-Tax) + (HRA + DA + TA) – PF 
+
+CREATE VIEW Emp_Salary_Details AS
+SELECT ename, sal, comm,
+(sal + IFNULL(comm,0)) AS total,
+(sal + IFNULL(comm,0)) * 0.30 AS tax,
+sal * 0.10 AS hra,
+sal * 0.05 AS da,
+sal * 0.07 AS ta,
+200 AS pf,
+((sal + IFNULL(comm,0)) - ((sal + IFNULL(comm,0)) * 0.30))
++ (sal * 0.10 + sal * 0.05 + sal * 0.07)
+- 200 AS gross
+FROM emp;
+
+
+3. Create a view Direct_Reporting which will display all the records of employee who 
+are directly reporting to King. 
+
+CREATE VIEW Direct_Reporting AS
+SELECT *
+FROM emp
+WHERE mgr =
+(
+SELECT empno
+FROM emp
+WHERE ename = 'KING'
+);
+
+
+4. Create a view named Dept_High_Earners which will display employee name, job, 
+salary and department name of those employees whose salary is greater than the 
+average salary of their respective department.
+
+CREATE VIEW Dept_High_Earners AS
+SELECT ename, job, sal, dname
+FROM emp
+JOIN dept
+ON emp.deptno = dept.deptno
+WHERE sal >
+(
+SELECT AVG(sal)
+FROM emp
+WHERE emp.deptno = dept.deptno
+);
+
+
+5. Create a view named Sales_Recent_Hires which will display all the details of 
+employees along with department name and location who belong to SALESMAN job 
+type and joined after 01-JAN-1982. 
+
+CREATE VIEW Sales_Recent_Hires AS
+SELECT emp.*, dname, loc
+FROM emp
+JOIN dept
+ON emp.deptno = dept.deptno
+WHERE job = 'SALESMAN'
+AND hiredate > '1982-01-01';
+
+
+6. Create a View Manager_Details which will show the following output:
+
+CREATE VIEW Manager_Details AS
+SELECT CONCAT('The Manager of ', e.ename, ' is ', m.ename) AS Manager_names
+FROM emp e
+JOIN emp m
+ON e.mgr = m.empno;
