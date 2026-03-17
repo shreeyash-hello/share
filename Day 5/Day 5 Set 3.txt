@@ -1,0 +1,46 @@
+1) Produce the following output
+
+SELECT ename,
+       job,
+       sal,
+       MAX(sal) OVER (PARTITION BY job) AS maximum,
+       MIN(sal) OVER (PARTITION BY job) AS minimum,
+       AVG(sal) OVER (PARTITION BY job) AS average
+FROM emp;
+
+
+
+2) Produce the following output 
+
+SELECT ename,
+       deptno,
+       sal AS existing_salary,
+       MAX(sal) OVER (PARTITION BY deptno) AS max_salary_of_dept,
+       MAX(sal) OVER (PARTITION BY deptno) - sal AS difference
+FROM emp;
+
+
+3) Display the record (s) of employee (s) having the oldest hiring date in their respective job 
+type 
+
+SELECT *
+FROM emp e
+WHERE hiredate =
+(
+SELECT MIN(hiredate)
+FROM emp
+WHERE job = e.job
+);
+
+
+4) Display the highest earner (s) records in each deptno
+
+SELECT *
+FROM emp e
+WHERE sal =
+(
+SELECT MAX(sal)
+FROM emp
+WHERE deptno = e.deptno
+);
+
