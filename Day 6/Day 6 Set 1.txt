@@ -1,1 +1,177 @@
+1) Create a procedure P1 that inserts numbers from 1 to 10 into table t1 which has only 
+one column named a of int type. Use while loop only
+
+CREATE TABLE t1 (a INT);
+
+DELIMITER //
+CREATE PROCEDURE p1 ()
+BEGIN
+	DECLARE num int DEFAULT 1;
+	WHILE num <= 10 DO
+		INSERT INTO t1(a) VALUES (num);
+		SET num = num + 1;
+	END WHILE;
+END//
+Delimiter ;
+
+
+
+2) Create a procedure P2 that inserts only even numbers between 1 and 50 into table t2 
+which has only one column named b of int type. Use repeat loop only.
+
+CREATE TABLE t2 (b INT);
+
+DELIMITER //
+CREATE PROCEDURE P2 ()
+BEGIN
+	DECLARE i INT DEFAULT 1;
+    	REPEAT
+        	IF i % 2 = 0 THEN
+            		INSERT INTO t2(b) VALUES (i);
+        	END IF;
+        	SET i = i + 1;
+    	UNTIL i > 50
+    	END REPEAT;
+END//
+Delimiter ;
+
+
+
+3) Create a procedure P3 that calculates sum of numbers from 1 to 100 and inserts the 
+final sum as a single row in table t3 which has only one column named c of int type. 
+Use of while loop only.
+
+CREATE TABLE t3 (c INT);
+
+DELIMITER //
+CREATE PROCEDURE P3 ()
+BEGIN
+	DECLARE num int DEFAULT 1;
+	DECLARE sum int DEFAULT 0;
+	WHILE num <= 100 DO
+		SET sum = sum + num;
+		SET num = num + 1;
+	END WHILE;
+	INSERT INTO t3(c) VALUES (sum);
+END//
+Delimiter ;
+
+
+
+4) Create a procedure P4 that inserts multiplication table of 5 (5 × 1 to 5 × 10) into table 
+t4 which has only one column named d of int type. Use basic loop only
+
+
+CREATE TABLE t4 (d INT);
+
+DELIMITER //
+CREATE PROCEDURE P4()
+BEGIN
+	DECLARE num int DEFAULT 1;
+	DECLARE num1 int DEFAULT 5;
+	DECLARE result int DEFAULT 1;
+ 	basic_loop: LOOP		
+		IF num > 10 THEN
+			LEAVE basic_loop;
+		END IF;
+		SET result = num1 * num;
+		INSERT INTO t4(d) VALUES (result);
+		SET num	= num + 1;
+		ITERATE basic_loop;
+	END LOOP basic_loop;
+END//
+Delimiter ;
+
+
+
+5) Create a procedure P5 that inserts numbers from 20 down to 1 into table t5 which
+has only one column named e of int type. Use repeat loop only.
+
+
+CREATE TABLE t5 (e INT);
+
+DELIMITER //
+CREATE PROCEDURE P5 ()
+BEGIN
+	DECLARE num int DEFAULT 20;
+	WHILE num >= 1 DO
+		INSERT INTO t5(e) VALUES (num);
+		SET num = num - 1;
+	END WHILE;
+END//
+Delimiter ;
+
+
+
+6) Create a procedure P6 that accepts marks as an input parameter and determines the
+student’s result. If the marks are greater than or equal to 80, the procedure should
+display the message 'Distinction'; if the marks are greater than or equal to 60 but less
+than 80, it should display 'First Class'; if the marks are greater than or equal to 40 but
+less than 60, it should display 'Pass'; otherwise, it should display 'Fail'.
+
+
+
+DELIMITER //
+CREATE PROCEDURE P6 (marks int)
+BEGIN
+	IF marks >= 80 THEN
+		SELECT 'Distinction' as Result;
+	ELSEIF	marks >= 60 AND marks <= 80 THEN
+		SELECT 'First Class' as Result;
+	ELSEIF marks >= 40 AND marks <= 60 THEN
+		SELECT 'Pass' as Result;
+	ELSE 
+		SELECT 'Fail' as Result;
+	END IF;
+END//
+Delimiter ;
+
+
+
+7) Create a procedure P7 that inserts squares of numbers from 1 to 15 into a table t6 
+which has only one column named g of int type. Use basic loop only
+
+CREATE TABLE t6 (g INT);
+
+DELIMITER //
+CREATE PROCEDURE P7()
+BEGIN
+	DECLARE num int DEFAULT 1;
+	DECLARE result int DEFAULT 1;
+ 	basic_loop: LOOP		
+		IF num >= 16 THEN
+			LEAVE basic_loop;
+		END IF;
+		SET result = num * num;
+		INSERT INTO t6(g) VALUES (result);
+		SET num = num + 1;
+		ITERATE basic_loop;
+	END LOOP basic_loop;
+END//
+Delimiter ;
+
+
+
+8) Create a procedure P8 that displays numbers starting from 1. Stop loop when
+number becomes divisible by 7. Display numbers until that point only. Use basic loop
+only.
+
+
+
+DELIMITER //
+CREATE PROCEDURE P8()
+BEGIN
+	DECLARE num int DEFAULT 1;
+	DECLARE result float DEFAULT 1;
+ 	basic_loop: LOOP		
+		IF num % 7 = 0 THEN
+			LEAVE basic_loop;
+		END IF;
+		SET result = num / 7;
+		SELECT num as 'Numbers not divisible by 7';
+		SET num = num + 1;
+		ITERATE basic_loop;
+	END LOOP basic_loop;
+END//
+Delimiter ;
 

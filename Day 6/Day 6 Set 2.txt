@@ -1,0 +1,338 @@
+1) Create a stored procedure that accepts an employee number as input and displays
+all details of that employee.
+
+DELIMITER //
+CREATE PROCEDURE DisplayEmp (num int)
+BEGIN
+	SELECT * 
+	FROM emp
+	WHERE empno = num;
+END//
+Delimiter ;
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+2) Create a procedure that accepts a department number and displays:
+a. Total employees in that department
+b. Average salary
+c. Highest salary
+d. Lowest salary
+
+
+DELIMITER //
+CREATE PROCEDURE displayData (num int)
+BEGIN
+	SELECT deptno, COUNT(deptno) AS 'Total Employees', 
+		AVG(sal) AS 'Average Salary', 
+		MAX(sal) AS 'Maximum Salary',
+		MIN(sal) AS 'Minimum Salary'
+	FROM emp
+	WHERE deptno = num
+	GROUP BY deptno;
+END//
+Delimiter ;
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+3) Create a copy of emp table as emp_sp.
+Create a stored procedure that:
+a. Accepts employee number and increment percentage
+b. Updates the salary accordingly in the emp_sp table
+c. Displays old salary and new salary
+
+CREATE TABLE emp_sp LIKE emp;
+INSERT INTO emp_sp SELECT * FROM emp;
+
+DELIMITER //
+CREATE PROCEDURE Q3 (num int, inc float)
+BEGIN
+	UPDATE emp_sp n
+	SET n.sal = (n.sal+(n.sal*inc))
+	WHERE n.empno = num;
+	SELECT o.sal AS 'Old Salary', (n.sal+(n.sal*inc)) as 'New Salary' 
+	FROM emp o JOIN emp_sp n
+	ON o.empno = n.empno
+	WHERE o.empno = num;
+END//
+Delimiter ;
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+4) Create a procedure to insert a new employee into emp_sp table.
+The procedure should:
+a. Accept all required employee details as parameters
+b. Validate that EMPNO does not already exist
+c. If exists → return a message
+d. Else → insert record
+
+
+DELIMITER //
+CREATE PROCEDURE Q4 (
+			IN n_EMPNO int, 
+			IN n_ENAME varchar(50), 
+			IN n_JOB varchar(50), 
+			IN n_MGR int, 
+			IN n_HIREDATE date, 
+			IN n_SAL int, 
+			IN n_COMM int, 
+			IN n_DEPTNO int
+		     )
+BEGIN
+	DECLARE e_count int;
+	SELECT COUNT(*) INTO e_count
+	FROM emp
+	WHERE empno = p_empno;
+	IF e_count > 0 THEN
+		SELECT 'Employee already exists' AS Validation;
+	ELSE
+		INSERT INTO emp_sp VALUES(
+					n_EMPNO, n_ENAME, n_JOB,
+					n_MGR, n_HIREDATE, n_SAL, 
+					n_COMM, n_DEPTNO
+					);
+	END IF;
+END//
+Delimiter ;
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+5) Create a procedure that accepts department number and displays employees who 
+earn more than the average salary of that department. 
+
+
+DELIMITER //
+CREATE PROCEDURE Q5(IN dnum int)
+BEGIN
+	SELECT *
+    	FROM emp e
+    	WHERE e.deptno = dnum
+    	AND sal > (
+        	SELECT AVG(sal)
+        	FROM emp
+        	WHERE deptno = dnum
+    		);
+
+END //
+DELIMITER ;
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+6) Create a procedure that: 
+a. Accepts department number 
+b. Calculates total salary expense from emp table 
+c. If total expense > 10000 → display “High Expense Department” 
+d. Else → display “Normal Expense Department”
+
+
+DELIMITER //
+CREATE PROCEDURE Q6(dnum int)
+BEGIN
+	DECLARE expense int;
+	SELECT SUM(sal) INTO expense
+	FROM emp
+	WHERE deptno = dnum;
+	IF expense > 10000 THEN
+		SELECT "High Expense Department" AS Category;
+	ELSE
+		SELECT "Normal Expense Department" AS Category;
+	END IF;
+END //
+Delimiter ;
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+7) Create a procedure that: 
+a. Accepts employee number 
+b. Based on salary, returns grade: 
+c. SAL >= 3000 → Grade A 
+d. SAL between 2000 and 2999 → Grade B 
+e. SAL < 2000 → Grade C
+
+
+DELIMITER //
+CREATE PROCEDURE Q7(enum int)
+BEGIN
+	DECLARE sumsal int;
+	SELECT SUM(sal) INTO sumsal
+	FROM emp
+	WHERE empno = enum;
+	IF sumsal >= 3000 THEN	
+		SELECT 'Grade A' as Grade;
+	ELSEIF sumsal >= 2999 AND sumsal <= 2000 THEN
+		SELECT 'Grade B' as Grade;
+	ELSE
+		SELECT 'Grade C' as Grade;
+	END IF;
+END//
+Delimiter ;
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+8) Create a procedure that accepts a year and: 
+a. Displays total employees hired in that year 
+b. Displays average salary of those employees
+
+
+DELIMITER //
+CREATE PROCEDURE Q8(yr int)
+BEGIN
+	SELECT *
+	FROM emp
+	WHERE YEAR(hiredate) = yr;
+
+	SELECT AVG(sal)
+	FROM emp
+	WHERE YEAR(hiredate) = yr;
+
+END//
+Delimiter ;
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+9) Create a copy of Emp table as “Emp_Copy”. Ensure all records of emp get copied in 
+the new table.
+
+Create a procedure that will add a new record in Emp_Copy table as per following 
+specifications: 
+a. Accepts all employee details as IN parameters 
+b. Returns via OUT parameter: 
+c. Status Message should be "Inserted Successfully"  if the new empno is unique. 
+And the record should get added in the Emp_Copy table.  
+d. Else if the empno is duplicate then the message should be "Employee Already 
+Exists" and records should not get added in the Emp_Copy table.. 
+
+
+CREATE TABLE Emp_Copy LIKE emp;
+INSERT INTO Emp_Copy SELECT * FROM emp;
+
+DELIMITER //
+CREATE PROCEDURE Q9 (
+			IN n_EMPNO int, 
+			IN n_ENAME varchar(50), 
+			IN n_JOB varchar(50), 
+			IN n_MGR int, 
+			IN n_HIREDATE date, 
+			IN n_SAL int, 
+			IN n_COMM int, 
+			IN n_DEPTNO int, 
+			OUT n_exists varchar(50)
+		     )
+
+BEGIN
+	DECLARE e_count int;
+	SELECT COUNT(*) INTO e_count
+	FROM Emp_Copy
+	WHERE empno = n_empno;
+	IF e_count > 0 THEN
+		SET n_exists = "Employee Already Exists";
+	ELSE
+		INSERT INTO Emp_Copy VALUES(
+					n_EMPNO, n_ENAME, n_JOB,
+					n_MGR, n_HIREDATE, n_SAL, 
+					n_COMM, n_DEPTNO
+					);
+		SET n_exists = "Inserted Successfully";
+	END IF;	
+END//
+Delimiter ;
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+10) Create a Procedure named “Add_Record” which will take customer id, name, bill no, 
+passport number and amount as the parameters. 
+The procedure should add record in both the tables. 
+In case of any error the error details should go in the table named Error_Log_table.
+
+
+CREATE TABLE Customers_2026
+	(
+		CustID int primary key,
+		CustName varchar(50) not null,
+		Cust_Bill_Number int check(cust_bill_number >= 500),
+		CustPassport_No varchar(50) unique
+	);
+
+
+CREATE TABLE Transactions_2026
+	(
+		CustID int not null,
+		CustTrID int auto_increment primary key,
+		Amount int check(amount >= 0 AND amount <= 100000),
+		foreign key(CustID) references customers_2026(CustID)
+	);
+
+CREATE TABLE Error_Log_table
+	(
+		RecID int auto_increment primary key,
+		Error_date date,
+		Error_Number int,
+		Error_Message varchar(255)
+	);
+
+
+
+DELIMITER //
+CREATE PROCEDURE Add_Record
+		(
+			IN cid int,
+			IN name varchar(50),
+			IN billno int,
+			IN passno varchar(50),
+			IN amt int
+		)
+BEGIN
+	DECLARE errno int;
+	DECLARE errmsg TEXT;
+
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	BEGIN	
+		GET DIAGNOSTICS CONDITION 1
+			errno = MYSQL_ERRNO,
+			errmsg = MESSAGE_TEXT;
+		INSERT INTO error_log_table
+					(
+						error_date,
+						error_number,
+						error_message
+					) 
+					VALUES (
+						CURDATE(), 
+						errno, 
+						errmsg
+						);
+	END;
+	
+	INSERT INTO customers_2026
+	VALUES (cid, name, billno, passno);
+
+	INSERT INTO transactions_2026 (custid, amount)
+	VALUES (cid, amt);
+
+END//
+Delimiter ;
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
